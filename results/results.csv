@@ -1,0 +1,17 @@
+Algorithm,Size,TimeNs,RecursionDepth
+MergeSort,100,384400,8
+QuickSort,100,2333700,5
+Select,100,2600200,7
+Closest Pair,100,5556600,7
+MergeSort,1000,414000,11
+QuickSort,1000,422100,6
+Select,1000,635100,12
+Closest Pair,1000,3497700,10
+MergeSort,5000,831300,14
+QuickSort,5000,757500,10
+Select,5000,1122100,14
+Closest Pair,5000,7763900,12
+MergeSort,10000,9284300,15
+QuickSort,10000,1457500,9
+Select,10000,2815800,14
+Closest Pair,10000,10730900,13

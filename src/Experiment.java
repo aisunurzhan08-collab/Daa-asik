@@ -1,21 +1,43 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Random;
 
 public class Experiment {
+
+    private static FileWriter writer;
 
     public static void main(String[] args) {
 
         int[] sizes = {100, 1000, 5000, 10000};
 
-        for (int size : sizes) {
+        try {
 
-            System.out.println("========== Size: " + size + " ==========");
+            new File("results").mkdirs();
 
-            testMergeSort(size);
-            testQuickSort(size);
-            testSelect(size);
-            testClosestPair(size);
+            writer = new FileWriter("results/results.csv");
+
+            writer.write("Algorithm,Size,TimeNs,RecursionDepth\n");
+
+            System.out.println("Algorithm | Size | Time (ns) | Depth");
+            System.out.println("--------------------------------------");
+
+            for (int size : sizes) {
+
+                testMergeSort(size);
+                testQuickSort(size);
+                testSelect(size);
+                testClosestPair(size);
+            }
+
+            writer.close();
 
             System.out.println();
+            System.out.println("Results saved to results/results.csv");
+
+        } catch (IOException e) {
+
+            System.out.println("Error saving results.");
         }
     }
 
@@ -29,7 +51,14 @@ public class Experiment {
 
         long end = System.nanoTime();
 
-        System.out.println("MergeSort: " + (end - start) + " ns");
+        long time = end - start;
+        int depth = MergeSorter.getMaxDepth();
+
+        System.out.println(
+                "MergeSort | " + size + " | " + time + " | " + depth
+        );
+
+        writeResult("MergeSort", size, time, depth);
     }
 
     public static void testQuickSort(int size) {
@@ -42,7 +71,14 @@ public class Experiment {
 
         long end = System.nanoTime();
 
-        System.out.println("QuickSort: " + (end - start) + " ns");
+        long time = end - start;
+        int depth = QuickSorter.getMaxDepth();
+
+        System.out.println(
+                "QuickSort | " + size + " | " + time + " | " + depth
+        );
+
+        writeResult("QuickSort", size, time, depth);
     }
 
     public static void testSelect(int size) {
@@ -53,11 +89,18 @@ public class Experiment {
 
         long start = System.nanoTime();
 
-        int result = DeterministicSelector.select(array, k);
+        DeterministicSelector.select(array, k);
 
         long end = System.nanoTime();
 
-        System.out.println("Select: " + (end - start) + " ns, result = " + result);
+        long time = end - start;
+        int depth = DeterministicSelector.getMaxDepth();
+
+        System.out.println(
+                "Select | " + size + " | " + time + " | " + depth
+        );
+
+        writeResult("Select", size, time, depth);
     }
 
     public static void testClosestPair(int size) {
@@ -66,11 +109,39 @@ public class Experiment {
 
         long start = System.nanoTime();
 
-        double result = ClosestPairSolver.findClosest(points);
+        ClosestPairSolver.findClosest(points);
 
         long end = System.nanoTime();
 
-        System.out.println("Closest Pair: " + (end - start) + " ns, distance = " + result);
+        long time = end - start;
+        int depth = ClosestPairSolver.getMaxDepth();
+
+        System.out.println(
+                "Closest Pair | " + size + " | " + time + " | " + depth
+        );
+
+        writeResult("Closest Pair", size, time, depth);
+    }
+
+    public static void writeResult(
+            String algorithm,
+            int size,
+            long time,
+            int depth) {
+
+        try {
+
+            writer.write(
+                    algorithm + "," +
+                            size + "," +
+                            time + "," +
+                            depth + "\n"
+            );
+
+        } catch (IOException e) {
+
+            System.out.println("Error writing result.");
+        }
     }
 
     public static int[] createArray(int size) {
@@ -80,6 +151,7 @@ public class Experiment {
         Random random = new Random();
 
         for (int i = 0; i < size; i++) {
+
             array[i] = random.nextInt(10000);
         }
 
@@ -93,6 +165,7 @@ public class Experiment {
         Random random = new Random();
 
         for (int i = 0; i < size; i++) {
+
             double x = random.nextDouble() * 1000;
             double y = random.nextDouble() * 1000;
 

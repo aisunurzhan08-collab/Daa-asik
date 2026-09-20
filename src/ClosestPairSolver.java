@@ -3,11 +3,17 @@ import java.util.Comparator;
 
 public class ClosestPairSolver {
 
+    private static int currentDepth = 0;
+    private static int maxDepth = 0;
+
     public static double findClosest(point[] points) {
 
         if (points == null || points.length < 2) {
             return 0;
         }
+
+        currentDepth = 0;
+        maxDepth = 0;
 
         point[] sorted = points.clone();
 
@@ -18,8 +24,16 @@ public class ClosestPairSolver {
 
     private static double find(point[] points, int left, int right) {
 
+        currentDepth++;
+
+        if (currentDepth > maxDepth) {
+            maxDepth = currentDepth;
+        }
+
         if (right - left <= 2) {
-            return simpleCheck(points, left, right);
+            double result = simpleCheck(points, left, right);
+            currentDepth--;
+            return result;
         }
 
         int middle = (left + right) / 2;
@@ -35,13 +49,19 @@ public class ClosestPairSolver {
         int count = 0;
 
         for (int i = left; i <= right; i++) {
+
             if (Math.abs(points[i].x - middleX) < best) {
                 strip[count] = points[i];
                 count++;
             }
         }
 
-        Arrays.sort(strip, 0, count, Comparator.comparingDouble(p -> p.y));
+        Arrays.sort(
+                strip,
+                0,
+                count,
+                Comparator.comparingDouble(p -> p.y)
+        );
 
         for (int i = 0; i < count; i++) {
 
@@ -59,10 +79,13 @@ public class ClosestPairSolver {
             }
         }
 
+        currentDepth--;
+
         return best;
     }
 
-    private static double simpleCheck(point[] points, int left, int right) {
+    private static double simpleCheck(
+            point[] points, int left, int right) {
 
         double best = Double.MAX_VALUE;
 
@@ -87,5 +110,9 @@ public class ClosestPairSolver {
         double dy = a.y - b.y;
 
         return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public static int getMaxDepth() {
+        return maxDepth;
     }
 }

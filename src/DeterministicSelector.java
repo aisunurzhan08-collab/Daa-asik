@@ -2,18 +2,31 @@ import java.util.Arrays;
 
 public class DeterministicSelector {
 
+    private static int currentDepth = 0;
+    private static int maxDepth = 0;
+
     public static int select(int[] array, int k) {
 
         if (k < 0 || k >= array.length) {
             throw new IllegalArgumentException("Wrong k");
         }
 
+        currentDepth = 0;
+        maxDepth = 0;
+
         return find(array, 0, array.length - 1, k);
     }
 
     private static int find(int[] array, int left, int right, int k) {
 
+        currentDepth++;
+
+        if (currentDepth > maxDepth) {
+            maxDepth = currentDepth;
+        }
+
         if (left == right) {
+            currentDepth--;
             return array[left];
         }
 
@@ -39,15 +52,19 @@ public class DeterministicSelector {
             }
         }
 
+        int result;
+
         if (k <= j) {
-            return find(array, left, j, k);
+            result = find(array, left, j, k);
+        } else if (k >= i) {
+            result = find(array, i, right, k);
+        } else {
+            result = pivot;
         }
 
-        if (k >= i) {
-            return find(array, i, right, k);
-        }
+        currentDepth--;
 
-        return pivot;
+        return result;
     }
 
     private static int choosePivot(int[] array, int left, int right) {
@@ -55,8 +72,10 @@ public class DeterministicSelector {
         int size = right - left + 1;
 
         if (size <= 5) {
+
             int[] small = Arrays.copyOfRange(array, left, right + 1);
             Arrays.sort(small);
+
             return small[size / 2];
         }
 
@@ -76,7 +95,12 @@ public class DeterministicSelector {
             m++;
         }
 
-        return find(medians, 0, medians.length - 1, medians.length / 2);
+        return find(
+                medians,
+                0,
+                medians.length - 1,
+                medians.length / 2
+        );
     }
 
     private static void swap(int[] array, int a, int b) {
@@ -84,5 +108,9 @@ public class DeterministicSelector {
         int temp = array[a];
         array[a] = array[b];
         array[b] = temp;
+    }
+
+    public static int getMaxDepth() {
+        return maxDepth;
     }
 }

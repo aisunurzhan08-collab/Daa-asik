@@ -1,13 +1,33 @@
 public class MergeSorter {
 
+    private static int currentDepth = 0;
+    private static int maxDepth = 0;
+
     public static void sort(int[] array) {
+
+        if (array == null || array.length < 2) {
+            return;
+        }
+
+        currentDepth = 0;
+        maxDepth = 0;
+
         int[] buffer = new int[array.length];
+
         mergeSort(array, buffer, 0, array.length - 1);
     }
 
-    private static void mergeSort(int[] array, int[] buffer, int left, int right) {
+    private static void mergeSort(int[] array, int[] buffer,
+                                  int left, int right) {
+
+        currentDepth++;
+
+        if (currentDepth > maxDepth) {
+            maxDepth = currentDepth;
+        }
 
         if (left >= right) {
+            currentDepth--;
             return;
         }
 
@@ -17,6 +37,8 @@ public class MergeSorter {
         mergeSort(array, buffer, middle + 1, right);
 
         merge(array, buffer, left, middle, right);
+
+        currentDepth--;
     }
 
     private static void merge(int[] array, int[] buffer,
@@ -54,5 +76,9 @@ public class MergeSorter {
         for (int p = left; p <= right; p++) {
             array[p] = buffer[p];
         }
+    }
+
+    public static int getMaxDepth() {
+        return maxDepth;
     }
 }

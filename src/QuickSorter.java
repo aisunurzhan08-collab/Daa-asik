@@ -4,15 +4,30 @@ public class QuickSorter {
 
     private static final Random random = new Random();
 
+    private static int currentDepth = 0;
+    private static int maxDepth = 0;
+
     public static void sort(int[] array) {
+
         if (array == null || array.length < 2) {
             return;
         }
 
+        currentDepth = 0;
+        maxDepth = 0;
+
         quickSort(array, 0, array.length - 1);
+
+        System.out.println("QuickSort max depth: " + maxDepth);
     }
 
     private static void quickSort(int[] array, int left, int right) {
+
+        currentDepth++;
+
+        if (currentDepth > maxDepth) {
+            maxDepth = currentDepth;
+        }
 
         while (left < right) {
 
@@ -56,11 +71,18 @@ public class QuickSorter {
                 right = j;
             }
         }
+
+        currentDepth--;
     }
 
     private static void swap(int[] array, int first, int second) {
+
         int temp = array[first];
         array[first] = array[second];
         array[second] = temp;
+    }
+
+    public static int getMaxDepth() {
+        return maxDepth;
     }
 }
